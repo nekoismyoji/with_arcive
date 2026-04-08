@@ -2,13 +2,13 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>School Idol Connect Archive</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Archive Connect</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
-        <h1>Archive Search</h1>
-        <div class="search-controls">
+        <div class="search-section">
             <input type="text" id="searchInput" placeholder="単語検索 (スペース区切り)">
             <select id="searchLogic">
                 <option value="AND">AND検索</option>
@@ -16,22 +16,23 @@
             </select>
         </div>
 
-        <div class="filter-controls">
+        <div class="filter-section">
             <div class="filter-group">
-                <label>期:</label>
-                <label><input type="checkbox" class="filter-gen" value="103"> 103期</label>
-                <label><input type="checkbox" class="filter-gen" value="104"> 104期</label>
-                <label><input type="checkbox" class="filter-gen" value="105"> 105期</label>
+                <span>期:</span>
+                <label><input type="checkbox" class="filter-gen" value="103"> 103</label>
+                <label><input type="checkbox" class="filter-gen" value="104"> 104</label>
+                <label><input type="checkbox" class="filter-gen" value="105"> 105</label>
             </div>
-            <div class="filter-group">
-                <label>出演者:</label>
-                <div id="performerFilters">
-                    </div>
+            <div class="filter-group performers">
+                <span>出演者:</span>
+                <div id="performerFilters"></div>
             </div>
-            <select id="filterLogic">
-                <option value="AND">フィルターAND</option>
-                <option value="OR">フィルターOR</option>
-            </select>
+            <div class="filter-logic-select">
+                <select id="filterLogic">
+                    <option value="AND">フィルターAND</option>
+                    <option value="OR">フィルターOR</option>
+                </select>
+            </div>
         </div>
     </header>
 
@@ -41,9 +42,13 @@
         <div class="modal-content">
             <span class="close">&times;</span>
             <img id="modalImage" src="" alt="">
-            <h2 id="modalTitle"></h2>
-            <p id="modalPerformers"></p>
-            <p id="modalSummary"></p>
+            <div class="modal-body">
+                <h2 id="modalTitle"></h2>
+                <p id="modalDate" class="badge"></p>
+                <div id="modalPerformers" class="perf-tags"></div>
+                <hr>
+                <p id="modalSummary"></p>
+            </div>
         </div>
     </div>
 
