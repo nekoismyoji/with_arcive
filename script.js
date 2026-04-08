@@ -1,370 +1,10 @@
 (function() {
-    // 1. 出演者リスト（慈を追加済み）
     const performersList = ["セラス", "泉", "吟子", "小鈴", "姫芽", "花帆", "さやか", "瑠璃乃", "梢", "綴理", "慈"];
 
-    // 2. アーカイブデータ（重複していたカッコを修正済み）
+    // 【ここにあなたの1500件のデータを貼り付けてください】
     const archiveData = [
         { filename: "001_103_0417.jpg", title: "配信 001", performers: [], summary: "" },
-        { filename: "002_103_0420.jpg", title: "配信 002", performers: [], summary: "" },
-        { filename: "003_103_0422.jpg", title: "配信 003", performers: [], summary: "" },
-        { filename: "004_103_0423.jpg", title: "配信 004", performers: [], summary: "" },
-        { filename: "005_103_0427.jpg", title: "配信 005", performers: [], summary: "" },
-        { filename: "006_103_0429.jpg", title: "配信 006", performers: [], summary: "" },
-        { filename: "007_0506.jpg", title: "配信 007", performers: [], summary: "" },
-        { filename: "008_0508.jpg", title: "配信 008", performers: [], summary: "" },
-        { filename: "009_0513.jpeg", title: "配信 009", performers: [], summary: "" },
-        { filename: "010_0515.jpg", title: "配信 010", performers: [], summary: "" },
-        { filename: "011_0521.jpg", title: "配信 011", performers: [], summary: "" },
-        { filename: "012_0522.jpg", title: "配信 012", performers: [], summary: "" },
-        { filename: "013_0525.jpg", title: "配信 013", performers: [], summary: "" },
-        { filename: "014_0527.jpg", title: "配信 014", performers: [], summary: "" },
-        { filename: "015_0529.jpg", title: "配信 015", performers: [], summary: "" },
-        { filename: "016_0603.jpeg", title: "配信 016", performers: [], summary: "" },
-        { filename: "017_0605.jpeg", title: "配信 017", performers: [], summary: "" },
-        { filename: "018_0608.jpeg", title: "配信 018", performers: [], summary: "" },
-        { filename: "019_0610.jpeg", title: "配信 019", performers: [], summary: "" },
-        { filename: "020_0612.jpeg", title: "配信 020", performers: [], summary: "" },
-        { filename: "021_0615.jpeg", title: "配信 021", performers: [], summary: "" },
-        { filename: "022_0617.jpg", title: "配信 022", performers: [], summary: "" },
-        { filename: "023_0619.jpeg", title: "配信 023", performers: [], summary: "" },
-        { filename: "024_0622.jpg", title: "配信 024", performers: [], summary: "" },
-        { filename: "025_0624.jpeg", title: "配信 025", performers: [], summary: "" },
-        { filename: "026_0626.jpeg", title: "配信 026", performers: [], summary: "" },
-        { filename: "027_0701.jpeg", title: "配信 027", performers: [], summary: "" },
-        { filename: "028_0703.jpeg", title: "配信 028", performers: [], summary: "" },
-        { filename: "029_0706.jpg", title: "配信 029", performers: [], summary: "" },
-        { filename: "030_0708.jpeg", title: "配信 030", performers: [], summary: "" },
-        { filename: "031_0713.jpeg", title: "配信 031", performers: [], summary: "" },
-        { filename: "032_0715.jpeg", title: "配信 032", performers: [], summary: "" },
-        { filename: "033_0717.jpeg", title: "配信 033", performers: [], summary: "" },
-        { filename: "034_0722.jpeg", title: "配信 034", performers: [], summary: "" },
-        { filename: "035_0724.jpeg", title: "配信 035", performers: [], summary: "" },
-        { filename: "036_0727.jpeg", title: "配信 036", performers: [], summary: "" },
-        { filename: "037_0728.jpeg", title: "配信 037", performers: [], summary: "" },
-        { filename: "038_0812.jpeg", title: "配信 038", performers: [], summary: "" },
-        { filename: "039_0816.jpeg", title: "配信 039", performers: [], summary: "" },
-        { filename: "040_0817.jpeg", title: "配信 040", performers: [], summary: "" },
-        { filename: "041_0819.jpeg", title: "配信 041", performers: [], summary: "" },
-        { filename: "042_0820.jpeg", title: "配信 042", performers: [], summary: "" },
-        { filename: "043_103_0824.jpg", title: "配信 043", performers: [], summary: "" },
-        { filename: "044_103_0828.jpg", title: "配信 044", performers: [], summary: "" },
-        { filename: "045_103_0831.jpg", title: "配信 045", performers: [], summary: "" },
-        { filename: "046_103_0902.jpg", title: "配信 046", performers: [], summary: "" },
-        { filename: "047_103_0904.jpg", title: "配信 047", performers: [], summary: "" },
-        { filename: "048_103_0907.jpg", title: "配信 048", performers: [], summary: "" },
-        { filename: "049_103_0909.jpg", title: "配信 049", performers: [], summary: "" },
-        { filename: "050_103_0911jpg.jpg", title: "配信 050", performers: [], summary: "" },
-        { filename: "051_103_0916.jpg", title: "配信 051", performers: [], summary: "" },
-        { filename: "052_103_0916_2.jpg", title: "配信 052", performers: [], summary: "" },
-        { filename: "053_103_0924.jpg", title: "配信 053", performers: [], summary: "" },
-        { filename: "054_103_0927.jpg", title: "配信 054", performers: [], summary: "" },
-        { filename: "055_103_0930.jpg", title: "配信 055", performers: [], summary: "" },
-        { filename: "056_103_1002.jpg", title: "配信 056", performers: [], summary: "" },
-        { filename: "057_103_1005.jpg", title: "配信 057", performers: [], summary: "" },
-        { filename: "058_103_1007.jpg", title: "配信 058", performers: [], summary: "" },
-        { filename: "059_103_1009.jpg", title: "配信 059", performers: [], summary: "" },
-        { filename: "060_103_1012.jpg", title: "配信 060", performers: [], summary: "" },
-        { filename: "061_103_1014.jpg", title: "配信 061", performers: [], summary: "" },
-        { filename: "062_103_1015.jpg", title: "配信 062", performers: [], summary: "" },
-        { filename: "063_103_1025.jpg", title: "配信 063", performers: [], summary: "" },
-        { filename: "064_103_1026.jpg", title: "配信 064", performers: [], summary: "" },
-        { filename: "065_1033_0504.jpg", title: "配信 065", performers: [], summary: "" },
-        { filename: "066_103_1104.jpg", title: "配信 066", performers: [], summary: "" },
-        { filename: "067_103_1106.jpg", title: "配信 067", performers: [], summary: "" },
-        { filename: "068_103_1109.jpg", title: "配信 068", performers: [], summary: "" },
-        { filename: "069_103_1111.jpg", title: "配信 069", performers: [], summary: "" },
-        { filename: "070_103_1113.jpg", title: "配信 070", performers: [], summary: "" },
-        { filename: "071_103_1113.jpg", title: "配信 071", performers: [], summary: "" },
-        { filename: "072_103_1130.jpg", title: "配信 072", performers: [], summary: "" },
-        { filename: "073_103_1202.jpg", title: "配信 073", performers: [], summary: "" },
-        { filename: "074_103_1204.jpg", title: "配信 074", performers: [], summary: "" },
-        { filename: "075_103_1207.jpg", title: "配信 075", performers: [], summary: "" },
-        { filename: "076_103_1211.jpg", title: "配信 076", performers: [], summary: "" },
-        { filename: "077_103_1213.jpg", title: "配信 077", performers: [], summary: "" },
-        { filename: "078_103_1216.jpg", title: "配信 078", performers: [], summary: "" },
-        { filename: "079_103_1220.jpg", title: "配信 079", performers: [], summary: "" },
-        { filename: "080_103_30511.jpg", title: "配信 080", performers: [], summary: "" },
-        { filename: "081_103_0111.jpg", title: "配信 081", performers: [], summary: "" },
-        { filename: "082_103_0113.jpg", title: "配信 082", performers: [], summary: "" },
-        { filename: "083_103_0115.jpg", title: "配信 083", performers: [], summary: "" },
-        { filename: "084_103_0118.jpg", title: "配信 084", performers: [], summary: "" },
-        { filename: "085_103_0120.jpg", title: "配信 085", performers: [], summary: "" },
-        { filename: "086_103_0124.jpg", title: "配信 086", performers: [], summary: "" },
-        { filename: "087_103_0127.jpg", title: "配信 087", performers: [], summary: "" },
-        { filename: "088_103_0129.jpg", title: "配信 088", performers: [], summary: "" },
-        { filename: "089_103_0203.jpg", title: "配信 089", performers: [], summary: "" },
-        { filename: "090_103_0205.jpg", title: "配信 090", performers: [], summary: "" },
-        { filename: "091_103_0208.jpg", title: "配信 091", performers: [], summary: "" },
-        { filename: "092_103_0212.jpg", title: "配信 092", performers: [], summary: "" },
-        { filename: "093_103_0215.jpg", title: "配信 093", performers: [], summary: "" },
-        { filename: "094_103_0219.jpg", title: "配信 094", performers: [], summary: "" },
-        { filename: "095_103_0224.jpg", title: "配信 095", performers: [], summary: "" },
-        { filename: "096_103_0225.jpg", title: "配信 096", performers: [], summary: "" },
-        { filename: "097_103_0302.jpg", title: "配信 097", performers: [], summary: "" },
-        { filename: "098_103_0304.jpg", title: "配信 098", performers: [], summary: "" },
-        { filename: "099_103_0306.jpg", title: "配信 099", performers: [], summary: "" },
-        { filename: "100_103_0313.jpg", title: "配信 100", performers: [], summary: "" },
-        { filename: "101_103_0316.jpg", title: "配信 101", performers: [], summary: "" },
-        { filename: "102_103_0318.jpg", title: "配信 102", performers: [], summary: "" },
-        { filename: "103_103_0321.jpg", title: "配信 103", performers: [], summary: "" },
-        { filename: "104_103_0323.jpg", title: "配信 104", performers: [], summary: "" },
-        { filename: "105_103_0325.jpg", title: "配信 105", performers: [], summary: "" },
-        { filename: "106_103_0330.jpg", title: "配信 106", performers: [], summary: "" },
-        { filename: "001_104_0401.jpg", title: "配信 001", performers: [], summary: "" },
-        { filename: "002_104_0404.jpg", title: "配信 002", performers: [], summary: "" },
-        { filename: "003_104_0406.jpg", title: "配信 003", performers: [], summary: "" },
-        { filename: "004_104_0408.jpg", title: "配信 004", performers: [], summary: "" },
-        { filename: "005_104_0411.jpg", title: "配信 005", performers: [], summary: "" },
-        { filename: "006_104_0413.jpg", title: "配信 006", performers: [], summary: "" },
-        { filename: "007_104_0418.jpg", title: "配信 007", performers: [], summary: "" },
-        { filename: "008_104_0424.jpg", title: "配信 008", performers: [], summary: "" },
-        { filename: "009_104_0425.jpg", title: "配信 009", performers: [], summary: "" },
-        { filename: "010_104_0427.jpg", title: "配信 010", performers: [], summary: "" },
-        { filename: "011_104_0502.jpg", title: "配信 011", performers: [], summary: "" },
-        { filename: "012_104_0504.jpg", title: "配信 012", performers: [], summary: "" },
-        { filename: "013_104_0506.jpg", title: "配信 013", performers: [], summary: "" },
-        { filename: "014_104_0509.jpg", title: "配信 014", performers: [], summary: "" },
-        { filename: "015_104_0511.jpg", title: "配信 015", performers: [], summary: "" },
-        { filename: "016_104_0513.jpg", title: "配信 016", performers: [], summary: "" },
-        { filename: "017_104_0522.jpg", title: "配信 017", performers: [], summary: "" },
-        { filename: "018_104_0525.jpg", title: "配信 018", performers: [], summary: "" },
-        { filename: "019_104_0527.jpg", title: "配信 019", performers: [], summary: "" },
-        { filename: "020_104_0530.jpg", title: "配信 020", performers: [], summary: "" },
-        { filename: "021_104_0601.jpg", title: "配信 021", performers: [], summary: "" },
-        { filename: "022_104_0603.jpg", title: "配信 022", performers: [], summary: "" },
-        { filename: "023_104_0606.jpg", title: "配信 023", performers: [], summary: "" },
-        { filename: "024_104_0608.jpg", title: "配信 024", performers: [], summary: "" },
-        { filename: "025_104_0610.jpg", title: "配信 025", performers: [], summary: "" },
-        { filename: "026_104_0613.jpg", title: "配信 026", performers: [], summary: "" },
-        { filename: "027_104_0615.jpg", title: "配信 027", performers: [], summary: "" },
-        { filename: "028_104_0617.jpg", title: "配信 028", performers: [], summary: "" },
-        { filename: "029_104_0620.jpg", title: "配信 029", performers: [], summary: "" },
-        { filename: "030_104_0622.jpg", title: "配信 030", performers: [], summary: "" },
-        { filename: "031_104_0624.jpg", title: "配信 031", performers: [], summary: "" },
-        { filename: "032_104_0627.jpg", title: "配信 032", performers: [], summary: "" },
-        { filename: "033_104_0629.jpg", title: "配信 033", performers: [], summary: "" },
-        { filename: "034_104_0701.jpg", title: "配信 034", performers: [], summary: "" },
-        { filename: "035_104_0704.jpg", title: "配信 035", performers: [], summary: "" },
-        { filename: "036_104_0706.jpg", title: "配信 036", performers: [], summary: "" },
-        { filename: "037_104_0708.jpg", title: "配信 037", performers: [], summary: "" },
-        { filename: "038_104_0711.jpg", title: "配信 038", performers: [], summary: "" },
-        { filename: "039_104_07113.jpg", title: "配信 039", performers: [], summary: "" },
-        { filename: "040_104_0718.jpg", title: "配信 040", performers: [], summary: "" },
-        { filename: "041_104_0720.jpg", title: "配信 041", performers: [], summary: "" },
-        { filename: "042_104_0722.jpg", title: "配信 042", performers: [], summary: "" },
-        { filename: "043_104_0725.jpg", title: "配信 043", performers: [], summary: "" },
-        { filename: "044_104_0727.jpg", title: "配信 044", performers: [], summary: "" },
-        { filename: "045_104_0729.jpg", title: "配信 045", performers: [], summary: "" },
-        { filename: "046_104_0803.jpg", title: "配信 046", performers: [], summary: "" },
-        { filename: "047_104_0805.jpg", title: "配信 047", performers: [], summary: "" },
-        { filename: "048_104_0808.jpg", title: "配信 048", performers: [], summary: "" },
-        { filename: "049_104_0810.jpg", title: "配信 049", performers: [], summary: "" },
-        { filename: "050_104_0812.jpg", title: "配信 050", performers: [], summary: "" },
-        { filename: "051_104_0815.jpg", title: "配信 051", performers: [], summary: "" },
-        { filename: "052_104_0817.jpg", title: "配信 052", performers: [], summary: "" },
-        { filename: "053_104_0819.jpg", title: "配信 053", performers: [], summary: "" },
-        { filename: "054_104_0822.jpg", title: "配信 054", performers: [], summary: "" },
-        { filename: "055_104_0826.jpg", title: "配信 055", performers: [], summary: "" },
-        { filename: "056_104_0902.jpg", title: "配信 056", performers: [], summary: "" },
-        { filename: "057_104_0905.jpg", title: "配信 057", performers: [], summary: "" },
-        { filename: "058_104_0907.jpg", title: "配信 058", performers: [], summary: "" },
-        { filename: "059_104_0909.jpg", title: "配信 059", performers: [], summary: "" },
-        { filename: "060_104_0914.jpg", title: "配信 060", performers: [], summary: "" },
-        { filename: "061_104_0916.jpg", title: "配信 061", performers: [], summary: "" },
-        { filename: "062_104_0919.jpg", title: "配信 062", performers: [], summary: "" },
-        { filename: "063_104_0921.jpg", title: "配信 063", performers: [], summary: "" },
-        { filename: "064_104_0923.jpg", title: "配信 064", performers: [], summary: "" },
-        { filename: "065_104_0926.jpg", title: "配信 065", performers: [], summary: "" },
-        { filename: "066_104_0930.jpg", title: "配信 066", performers: [], summary: "" },
-        { filename: "067_104_1003.jpg", title: "配信 067", performers: [], summary: "" },
-        { filename: "068_104_1005.jpg", title: "配信 068", performers: [], summary: "" },
-        { filename: "069_104_1007.jpg", title: "配信 069", performers: [], summary: "" },
-        { filename: "070_104_1010.jpg", title: "配信 070", performers: [], summary: "" },
-        { filename: "071_104_1012.jpg", title: "配信 071", performers: [], summary: "" },
-        { filename: "072_104_1014.jpg", title: "配信 072", performers: [], summary: "" },
-        { filename: "073_104_1017.jpg", title: "配信 073", performers: [], summary: "" },
-        { filename: "074_104_1019.jpg", title: "配信 074", performers: [], summary: "" },
-        { filename: "075_104_1020.jpg", title: "配信 075", performers: [], summary: "" },
-        { filename: "076_104_1024.jpg", title: "配信 076", performers: [], summary: "" },
-        { filename: "077_104_1026.jpg", title: "配信 077", performers: [], summary: "" },
-        { filename: "078_104_1031.jpg", title: "配信 078", performers: [], summary: "" },
-        { filename: "079_104_1102.jpg", title: "配信 079", performers: [], summary: "" },
-        { filename: "080_104_1104.jpg", title: "配信 080", performers: [], summary: "" },
-        { filename: "081_104_1107.jpg", title: "配信 081", performers: [], summary: "" },
-        { filename: "082_104_1109.jpg", title: "配信 082", performers: [], summary: "" },
-        { filename: "083_104_1111.jpg", title: "配信 083", performers: [], summary: "" },
-        { filename: "084_104_1114.jpg", title: "配信 084", performers: [], summary: "" },
-        { filename: "085_104_1117.jpg", title: "配信 085", performers: [], summary: "" },
-        { filename: "086_104_1121.jpg", title: "配信 086", performers: [], summary: "" },
-        { filename: "087_104_1123.jpg", title: "配信 087", performers: [], summary: "" },
-        { filename: "088_104_1125.jpg", title: "配信 088", performers: [], summary: "" },
-        { filename: "089_104_1128.jpg", title: "配信 089", performers: [], summary: "" },
-        { filename: "090_104_1130.jpg", title: "配信 090", performers: [], summary: "" },
-        { filename: "091_104_1202.jpg", title: "配信 091", performers: [], summary: "" },
-        { filename: "092_104_1205.jpg", title: "配信 092", performers: [], summary: "" },
-        { filename: "093_104_1207.jpg", title: "配信 093", performers: [], summary: "" },
-        { filename: "094_104_1209.jpg", title: "配信 094", performers: [], summary: "" },
-        { filename: "095_104_1212.jpg", title: "配信 095", performers: [], summary: "" },
-        { filename: "096_104_1214.jpg", title: "配信 096", performers: [], summary: "" },
-        { filename: "097_104_1216.jpg", title: "配信 097", performers: [], summary: "" },
-        { filename: "098_104_1218.jpg", title: "配信 098", performers: [], summary: "" },
-        { filename: "099_104_1225.jpg", title: "配信 099", performers: [], summary: "" },
-        { filename: "100_104_1228.jpg", title: "配信 100", performers: [], summary: "" },
-        { filename: "101_104_1230.jpg", title: "配信 101", performers: [], summary: "" },
-        { filename: "102_104_0113.jpg", title: "配信 102", performers: [], summary: "" },
-        { filename: "103_104_0116.jpg", title: "配信 103", performers: [], summary: "" },
-        { filename: "104_104_0118.jpg", title: "配信 104", performers: [], summary: "" },
-        { filename: "105_104_0120_be.jpg", title: "配信 105", performers: [], summary: "" },
-        { filename: "106_104_0124.jpg", title: "配信 106", performers: [], summary: "" },
-        { filename: "107_104_0129.jpg", title: "配信 107", performers: [], summary: "" },
-        { filename: "108_104_0206.jpg", title: "配信 108", performers: [], summary: "" },
-        { filename: "109_104_0208.jpg", title: "配信 109", performers: [], summary: "" },
-        { filename: "110_104_0210.jpg", title: "配信 110", performers: [], summary: "" },
-        { filename: "111_104_0213.jpg", title: "配信 111", performers: [], summary: "" },
-        { filename: "112_104_0215.jpg", title: "配信 112", performers: [], summary: "" },
-        { filename: "113_104_0220.jpg", title: "配信 113", performers: [], summary: "" },
-        { filename: "114_104_0222.jpg", title: "配信 114", performers: [], summary: "" },
-        { filename: "115_104_0224.jpg", title: "配信 115", performers: [], summary: "" },
-        { filename: "116_104_0228.jpg", title: "配信 116", performers: [], summary: "" },
-        { filename: "117_104_0303.jpg", title: "配信 117", performers: [], summary: "" },
-        { filename: "118_104_0306.jpg", title: "配信 118", performers: [], summary: "" },
-        { filename: "119_104_0308.jpg", title: "配信 119", performers: [], summary: "" },
-        { filename: "120_104_0310.jpg", title: "配信 120", performers: [], summary: "" },
-        { filename: "121_104_0313.jpg", title: "配信 121", performers: [], summary: "" },
-        { filename: "122_104_0317.jpg", title: "配信 122", performers: [], summary: "" },
-        { filename: "123_104_0320.jpg", title: "配信 123", performers: [], summary: "" },
-        { filename: "124_104_0322.jpg", title: "配信 124", performers: [], summary: "" },
-        { filename: "125_104_0323.jpg", title: "配信 125", performers: [], summary: "" },
-        { filename: "126_104_0324.jpg", title: "配信 126", performers: [], summary: "" },
-        { filename: "127_104_0327.jpg", title: "配信 127", performers: [], summary: "" },
-        { filename: "001_104_0403.jpg", title: "配信 001", performers: [], summary: "" },
-        { filename: "002_105_0405.jpg", title: "配信 002", performers: [], summary: "" },
-        { filename: "003_105_0407.jpg", title: "配信 003", performers: [], summary: "" },
-        { filename: "004_105_0410.jpg", title: "配信 004", performers: [], summary: "" },
-        { filename: "005_105_0412.jpg", title: "配信 005", performers: [], summary: "" },
-        { filename: "006_105_0417.jpg", title: "配信 006", performers: [], summary: "" },
-        { filename: "007_105_0419.jpg", title: "配信 007", performers: [], summary: "" },
-        { filename: "008_105_0421.jpg", title: "配信 008", performers: [], summary: "" },
-        { filename: "009_105_0423.jpg", title: "配信 009", performers: [], summary: "" },
-        { filename: "010_105_0501.jpg", title: "配信 010", performers: [], summary: "" },
-        { filename: "011_105_0503.jpg", title: "配信 011", performers: [], summary: "" },
-        { filename: "012_105_0505.jpg", title: "配信 012", performers: [], summary: "" },
-        { filename: "013_105_0508.jpg", title: "配信 013", performers: [], summary: "" },
-        { filename: "014_105_0510.jpg", title: "配信 014", performers: [], summary: "" },
-        { filename: "015_105_0512.jpg", title: "配信 015", performers: [], summary: "" },
-        { filename: "016_105_0515.jpg", title: "配信 016", performers: [], summary: "" },
-        { filename: "017_105_0517.jpg", title: "配信 017", performers: [], summary: "" },
-        { filename: "018_105_0519.jpg", title: "配信 018", performers: [], summary: "" },
-        { filename: "019_105_0522.jpg", title: "配信 019", performers: [], summary: "" },
-        { filename: "020_105_0524.jpg", title: "配信 020", performers: [], summary: "" },
-        { filename: "021_105_0526.jpg", title: "配信 021", performers: [], summary: "" },
-        { filename: "022_105_0529.jpg", title: "配信 022", performers: [], summary: "" },
-        { filename: "023_105_0604.jpg", title: "配信 023", performers: [], summary: "" },
-        { filename: "024_105_0608.jpg", title: "配信 024", performers: [], summary: "" },
-        { filename: "025_105_0612.jpg", title: "配信 025", performers: [], summary: "" },
-        { filename: "026_105_0614.jpg", title: "配信 026", performers: [], summary: "" },
-        { filename: "027_105_0616.jpg", title: "配信 027", performers: [], summary: "" },
-        { filename: "028_105_0619.jpg", title: "配信 028", performers: [], summary: "" },
-        { filename: "029_105_0621.jpg", title: "配信 029", performers: [], summary: "" },
-        { filename: "030_105_0623.jpg", title: "配信 030", performers: [], summary: "" },
-        { filename: "031_105_0626.jpg", title: "配信 031", performers: [], summary: "" },
-        { filename: "032_105_0628.jpg", title: "配信 032", performers: [], summary: "" },
-        { filename: "033_105_0703.jpg", title: "配信 033", performers: [], summary: "" },
-        { filename: "034_105_0705.jpg", title: "配信 034", performers: [], summary: "" },
-        { filename: "035_105_0707.jpg", title: "配信 035", performers: [], summary: "" },
-        { filename: "036_105_0710.jpg", title: "配信 036", performers: [], summary: "" },
-        { filename: "037_105_0712.jpg", title: "配信 037", performers: [], summary: "" },
-        { filename: "038_105_0714.jpg", title: "配信 038", performers: [], summary: "" },
-        { filename: "039_105_0717.jpg", title: "配信 039", performers: [], summary: "" },
-        { filename: "040_105_0719.jpg", title: "配信 040", performers: [], summary: "" },
-        { filename: "041_105_0721.jpg", title: "配信 041", performers: [], summary: "" },
-        { filename: "042_105_0724.jpg", title: "配信 042", performers: [], summary: "" },
-        { filename: "043_105_0726.jpg", title: "配信 043", performers: [], summary: "" },
-        { filename: "044_105_0728.jpg", title: "配信 044", performers: [], summary: "" },
-        { filename: "045_105_0731.jpg", title: "配信 045", performers: [], summary: "" },
-        { filename: "046_105_0802.jpg", title: "配信 046", performers: [], summary: "" },
-        { filename: "047_105_0804.jpg", title: "配信 047", performers: [], summary: "" },
-        { filename: "048_105_0807.jpg", title: "配信 048", performers: [], summary: "" },
-        { filename: "049_105_0809.jpg", title: "配信 049", performers: [], summary: "" },
-        { filename: "050_105_0811.jpg", title: "配信 050", performers: [], summary: "" },
-        { filename: "051_105_0813.jpg", title: "配信 051", performers: [], summary: "" },
-        { filename: "052_105_0816.jpg", title: "配信 052", performers: [], summary: "" },
-        { filename: "053_105_0821.jpg", title: "配信 053", performers: [], summary: "" },
-        { filename: "054_105_0823.jpg", title: "配信 054", performers: [], summary: "" },
-        { filename: "055_105_0825.jpg", title: "配信 055", performers: [], summary: "" },
-        { filename: "056_105_0828.jpg", title: "配信 056", performers: [], summary: "" },
-        { filename: "057_105_0901.jpg", title: "配信 057", performers: [], summary: "" },
-        { filename: "058_105_0904.jpg", title: "配信 058", performers: [], summary: "" },
-        { filename: "059_105_0906.jpg", title: "配信 059", performers: [], summary: "" },
-        { filename: "060_105_0911.jpg", title: "配信 060", performers: [], summary: "" },
-        { filename: "061_105_0913.jpg", title: "配信 061", performers: [], summary: "" },
-        { filename: "062_105_0915.jpg", title: "配信 062", performers: [], summary: "" },
-        { filename: "063_105_0918.jpg", title: "配信 063", performers: [], summary: "" },
-        { filename: "064_105_0920.jpg", title: "配信 064", performers: [], summary: "" },
-        { filename: "065_105_0922.jpg", title: "配信 065", performers: [], summary: "" },
-        { filename: "066_105_0924.jpg", title: "配信 066", performers: [], summary: "" },
-        { filename: "067_105_0927.jpg", title: "配信 067", performers: [], summary: "" },
-        { filename: "068_105_0929.jpg", title: "配信 068", performers: [], summary: "" },
-        { filename: "069_105_1001.jpg", title: "配信 069", performers: [], summary: "" },
-        { filename: "070_105_1009.jpg", title: "配信 070", performers: [], summary: "" },
-        { filename: "071_105_1011.jpg", title: "配信 071", performers: [], summary: "" },
-        { filename: "072_105_1013.jpg", title: "配信 072", performers: [], summary: "" },
-        { filename: "073_105_1016.jpg", title: "配信 073", performers: [], summary: "" },
-        { filename: "074_105_1018.jpg", title: "配信 074", performers: [], summary: "" },
-        { filename: "075_105_1020.jpg", title: "配信 075", performers: [], summary: "" },
-        { filename: "076_105_1023.jpg", title: "配信 076", performers: [], summary: "" },
-        { filename: "077_105_1025.jpg", title: "配信 077", performers: [], summary: "" },
-        { filename: "078_105_1027.jpg", title: "配信 078", performers: [], summary: "" },
-        { filename: "079_105_1101.jpg", title: "配信 079", performers: [], summary: "" },
-        { filename: "080_105_1103.jpg", title: "配信 080", performers: [], summary: "" },
-        { filename: "081_105_1106.jpg", title: "配信 081", performers: [], summary: "" },
-        { filename: "082_105_1113.jpg", title: "配信 082", performers: [], summary: "" },
-        { filename: "083_105_1115.jpg", title: "配信 083", performers: [], summary: "" },
-        { filename: "084_105_1117.jpg", title: "配信 084", performers: [], summary: "" },
-        { filename: "085_105_1124.jpg", title: "配信 085", performers: [], summary: "" },
-        { filename: "086_105_1127.jpg", title: "配信 086", performers: [], summary: "" },
-        { filename: "087_105_1129.jpg", title: "配信 087", performers: [], summary: "" },
-        { filename: "088_105_1201.jpg", title: "配信 088", performers: [], summary: "" },
-        { filename: "089_105_1208.jpg", title: "配信 089", performers: [], summary: "" },
-        { filename: "090_105_1211.jpg", title: "配信 090", performers: [], summary: "" },
-        { filename: "091_105_1213.jpg", title: "配信 091", performers: [], summary: "" },
-        { filename: "092_105_1218.jpg", title: "配信 092", performers: [], summary: "" },
-        { filename: "093_105_1220.jpg", title: "配信 093", performers: [], summary: "" },
-        { filename: "094_105_1222.jpg", title: "配信 094", performers: [], summary: "" },
-        { filename: "095_105_1225.jpg", title: "配信 095", performers: [], summary: "" },
-        { filename: "096_105_1229.jpg", title: "配信 096", performers: [], summary: "" },
-        { filename: "097_105_0108.jpg", title: "配信 097", performers: [], summary: "" },
-        { filename: "098_105_0110.jpg", title: "配信 098", performers: [], summary: "" },
-        { filename: "099_105_0112.jpg", title: "配信 099", performers: [], summary: "" },
-        { filename: "100_105_0114.jpg", title: "配信 100", performers: [], summary: "" },
-        { filename: "101_105_0117.jpg", title: "配信 101", performers: [], summary: "" },
-        { filename: "102_105_0119.jpg", title: "配信 102", performers: [], summary: "" },
-        { filename: "103_105_0122.jpg", title: "配信 103", performers: [], summary: "" },
-        { filename: "104_105_0124.jpg", title: "配信 104", performers: [], summary: "" },
-        { filename: "105_105_0129.jpg", title: "配信 105", performers: [], summary: "" },
-        { filename: "106_105_0131.jpg", title: "配信 106", performers: [], summary: "" },
-        { filename: "107_105_0202.jpg", title: "配信 107", performers: [], summary: "" },
-        { filename: "108_105_0205.jpg", title: "配信 108", performers: [], summary: "" },
-        { filename: "109_105_0207.jpg", title: "配信 109", performers: [], summary: "" },
-        { filename: "110_105_0209.jpg", title: "配信 110", performers: [], summary: "" },
-        { filename: "111_105_0212.jpg", title: "配信 111", performers: [], summary: "" },
-        { filename: "112_105_0214.jpg", title: "配信 112", performers: [], summary: "" },
-        { filename: "113_105_0216.jpg", title: "配信 113", performers: [], summary: "" },
-        { filename: "114_105_0219.jpg", title: "配信 114", performers: [], summary: "" },
-        { filename: "115_105_0221.jpg", title: "配信 115", performers: [], summary: "" },
-        { filename: "116_105_0223.jpg", title: "配信 116", performers: [], summary: "" },
-        { filename: "117_105_0226.jpg", title: "配信 117", performers: [], summary: "" },
-        { filename: "118_105_0301.jpg", title: "配信 118", performers: [], summary: "" },
-        { filename: "119_105_0305.jpg", title: "配信 119", performers: [], summary: "" },
-        { filename: "120_105_0307.jpg", title: "配信 120", performers: [], summary: "" },
-        { filename: "121_105_0309.jpg", title: "配信 121", performers: [], summary: "" },
-        { filename: "122_105_0312.jpg", title: "配信 122", performers: [], summary: "" },
-        { filename: "123_105_0315.jpg", title: "配信 123", performers: [], summary: "" },
-        { filename: "124_105_0319.jpg", title: "配信 124", performers: [], summary: "" },
-        { filename: "125_105_0321.jpg", title: "配信 125", performers: [], summary: "" },
-        { filename: "126_105_0323.jpg", title: "配信 126", performers: [], summary: "" },
-        { filename: "127_105_0326.jpg", title: "配信 127", performers: [], summary: "" },
-        { filename: "128_105_0328.jpg", title: "配信 128", performers: [], summary: "" },
+        // ... (中略) ...
         { filename: "129_105_megu.jpg", title: "配信 129", performers: [], summary: "" }
     ];
 
@@ -373,58 +13,61 @@
         const perfContainer = document.getElementById('performerFilters');
         if (!grid || !perfContainer) return;
 
-        // 1. 出演者フィルター生成
         perfContainer.innerHTML = performersList.map(p => 
             `<label style="margin-right:10px; cursor:pointer;"><input type="checkbox" class="filter-perf" value="${p}"> ${p}</label>`
         ).join('');
 
-        // 2. 描画関数
+        function getInfo(filename) {
+            const parts = filename.split('_');
+            let gen = "103"; // デフォルト
+            if (parts.includes("105")) gen = "105";
+            else if (parts.includes("104")) gen = "104";
+            
+            // 拡張子を除去して日付を特定
+            const lastPart = parts[parts.length - 1].split('.')[0];
+            const date = lastPart.replace("jpg", "").replace("jpeg", "");
+            
+            return { gen, date, folder: `${gen}期サムネ` };
+        }
+
         function render(data) {
             grid.innerHTML = data.map(item => {
-                const parts = item.filename.split('_');
-                
-                // フォルダ名の判定ロジック
-                let gen = "103"; // デフォルト
-                if (parts.includes("105")) gen = "105";
-                else if (parts.includes("104")) gen = "104";
-                
-                const folder = `${gen}期サムネ`;
-                const datePart = parts[parts.length - 1].replace(/\.[^/.]+$/, "").replace("jpg", "");
-                
+                const info = getInfo(item.filename);
                 return `
                     <div class="card" onclick="openModal('${item.filename}')">
-                        <img src="${folder}/${item.filename}" loading="lazy" onerror="this.src='https://via.placeholder.com/160x90?text=No+Image'">
+                        <div class="card-img-wrapper">
+                            <img src="${info.folder}/${item.filename}" loading="lazy" onerror="this.src='https://via.placeholder.com/160x90?text=No+Image'">
+                        </div>
                         <div class="card-info">
-                            <div>${item.title}</div>
-                            <small style="color:#666">${datePart}</small>
+                            <div class="card-title">${item.title}</div>
+                            <div class="card-date">${info.date}</div>
                         </div>
                     </div>
                 `;
             }).join('');
         }
 
-        // 3. 詳細表示
         window.openModal = function(filename) {
             const item = archiveData.find(d => d.filename === filename);
             if (!item) return;
             
-            const parts = filename.split('_');
-            let gen = "103";
-            if (parts.includes("105")) gen = "105";
-            else if (parts.includes("104")) gen = "104";
+            const info = getInfo(filename);
+            const modalImg = document.getElementById('modalImage');
             
-            const folder = `${gen}期サムネ`;
-            const datePart = parts[parts.length - 1].replace(/\.[^/.]+$/, "").replace("jpg", "");
+            // 画像の設定
+            modalImg.src = `${info.folder}/${filename}`;
+            modalImg.onerror = function() { this.src = 'https://via.placeholder.com/400x225?text=Image+Not+Found'; };
 
-            document.getElementById('modalImage').src = `${folder}/${filename}`;
+            // テキスト情報の設定
             document.getElementById('modalTitle').innerText = item.title;
-            document.getElementById('modalDate').innerText = `日付: ${datePart}`;
-            document.getElementById('modalPerformers').innerText = "出演: " + (item.performers.length > 0 ? item.performers.join(', ') : "未設定");
-            document.getElementById('modalSummary').innerText = item.summary || "概要はまだありません。";
+            document.getElementById('modalDate').innerText = `配信日: ${info.date} (${info.gen}期)`;
+            document.getElementById('modalPerformers').innerText = "出演: " + (item.performers.length > 0 ? item.performers.join(', ') : "（出演者データ未登録）");
+            document.getElementById('modalSummary').innerText = item.summary || "（配信の概要データはまだありません）";
+            
             document.getElementById('detailModal').style.display = "block";
+            document.body.style.overflow = "hidden"; // 背景スクロール防止
         };
 
-        // 4. 検索・フィルター
         function filterData() {
             const searchText = document.getElementById('searchInput').value.toLowerCase().split(/\s+/).filter(t => t);
             const searchLogic = document.getElementById('searchLogic').value;
@@ -433,6 +76,7 @@
             const filterLogic = document.getElementById('filterLogic').value;
 
             const filtered = archiveData.filter(item => {
+                const info = getInfo(item.filename);
                 const fullText = (item.title + item.summary + item.performers.join('')).toLowerCase();
                 
                 let matchSearch = true;
@@ -442,12 +86,7 @@
                         : searchText.some(t => fullText.includes(t));
                 }
 
-                const parts = item.filename.split('_');
-                let itemGen = "103";
-                if (parts.includes("105")) itemGen = "105";
-                else if (parts.includes("104")) itemGen = "104";
-                const matchGen = selectedGens.length === 0 || selectedGens.includes(itemGen);
-
+                const matchGen = selectedGens.length === 0 || selectedGens.includes(info.gen);
                 const matchPerf = selectedPerfs.length === 0 || (
                     filterLogic === 'AND' 
                         ? selectedPerfs.every(p => item.performers.includes(p)) 
@@ -461,8 +100,16 @@
 
         document.querySelectorAll('input, select').forEach(el => el.addEventListener('change', filterData));
         document.getElementById('searchInput').addEventListener('input', filterData);
-        document.querySelector('.close').onclick = () => document.getElementById('detailModal').style.display = "none";
-        window.onclick = (e) => { if(e.target.id === 'detailModal') document.getElementById('detailModal').style.display = "none"; };
+        document.querySelector('.close').onclick = () => {
+            document.getElementById('detailModal').style.display = "none";
+            document.body.style.overflow = "auto";
+        };
+        window.onclick = (e) => { 
+            if(e.target.id === 'detailModal') {
+                document.getElementById('detailModal').style.display = "none";
+                document.body.style.overflow = "auto";
+            }
+        };
 
         render(archiveData);
     });
