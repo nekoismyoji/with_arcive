@@ -1,19 +1,32 @@
-body { font-family: sans-serif; background: #f0f4f8; margin: 0; padding: 20px; }
-header { background: #fff; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+:root { --main-blue: #00a0e9; --soft-gray: #f8f9fa; }
+body { font-family: sans-serif; background: #eef2f5; margin: 0; color: #333; }
+
+header { 
+    background: white; padding: 15px; position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.search-section, .filter-section { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 10px; align-items: center; }
+.filter-group { background: #f0f0f0; padding: 5px 10px; border-radius: 20px; font-size: 0.85em; }
+#searchInput { padding: 8px; border-radius: 5px; border: 1px solid #ccc; flex-grow: 1; }
+
 .grid-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 15px;
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px; padding: 15px;
 }
+
 .archive-card {
-    background: #fff; border-radius: 8px; overflow: hidden; cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    background: white; border-radius: 8px; overflow: hidden; cursor: pointer;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.1); transition: transform 0.2s;
 }
-.archive-card img { width: 100%; display: block; }
-.archive-card .info { padding: 10px; font-size: 0.9em; }
+.archive-card:hover { transform: translateY(-3px); }
+.archive-card img { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
+.archive-card .card-info { padding: 8px; font-size: 0.85em; font-weight: bold; }
 
 /* モーダル */
-.modal { display: none; position: fixed; z-index: 1; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); }
-.modal-content { background: #fff; margin: 5% auto; padding: 20px; width: 80%; max-width: 600px; border-radius: 10px; }
-.modal-content img { width: 100%; border-radius: 5px; }
-.close { float: right; font-size: 28px; cursor: pointer; }
+.modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); }
+.modal-content { background: white; margin: 5% auto; width: 90%; max-width: 500px; border-radius: 12px; overflow: hidden; }
+.modal-body { padding: 20px; }
+.close { float: right; font-size: 28px; cursor: pointer; padding: 10px; }
+.badge { display: inline-block; background: #333; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; }
+.perf-tags { margin: 10px 0; color: var(--main-blue); font-weight: bold; }
