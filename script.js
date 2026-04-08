@@ -1,88 +1,114 @@
-document.addEventListener('DOMContentLoaded', () => {
+(function() {
     const performersList = ["セラス", "泉", "吟子", "小鈴", "姫芽", "花帆", "さやか", "瑠璃乃", "梢", "綴理", "慈"];
 
-    // 【重要】ここのfilenameが実際の画像ファイル名と1字1句合っているか確認してください
+    // 【ここに先ほどの1500件のデータを貼り付けてください】
     const archiveData = [
-        { filename: "001_104_0403.jpg", title: "104期初配信", performers: ["花帆", "さやか", "瑠璃乃", "慈"], summary: "104期の活動がここから始まります！" },
-        { filename: "004_105_0410.jpg", title: "105期定例配信", performers: ["花帆", "姫芽", "慈"], summary: "新入生を迎えての賑やかな配信。" },
-        { filename: "023_105_0604.jpg", title: "雨の日の雑談ライブ", performers: ["梢", "綴理", "慈"], summary: "まったりとした放課後トーク。" }
+        { filename: "001_103_0417.jpg", title: "配信 001", performers: [], summary: "" },
+        // ... 中略 ...
+        { filename: "129_105_megu.jpg", title: "配信 129", performers: [], summary: "" },
     ];
 
-    const grid = document.getElementById('archiveGrid');
-    const perfContainer = document.getElementById('performerFilters');
+    window.addEventListener('DOMContentLoaded', () => {
+        const grid = document.getElementById('archiveGrid');
+        const perfContainer = document.getElementById('performerFilters');
+        if (!grid || !perfContainer) return;
 
-    // 出演者フィルター生成
-    performersList.forEach(p => {
-        const label = document.createElement('label');
-        label.style.marginRight = "10px";
-        label.innerHTML = `<input type="checkbox" class="filter-perf" value="${p}"> ${p}`;
-        perfContainer.appendChild(label);
-    });
+        // 1. 出演者フィルター生成
+        perfContainer.innerHTML = performersList.map(p => 
+            `<label style="margin-right:10px; cursor:pointer;"><input type="checkbox" class="filter-perf" value="${p}"> ${p}</label>`
+        ).join('');
 
-    function render(data) {
-        if (!grid) return;
-        grid.innerHTML = data.map(item => {
-            const parts = item.filename.split('_');
-            if (parts.length < 3) return ''; // ファイル名形式エラー対策
-            
-            const gen = parts[1]; // "105" など
-            const date = parts[2].split('.')[0]; // "0410" など
-            const folder = `${gen}期サムネ`; 
-            
-            return `
-                <div class="card" onclick="window.showDetail('${item.filename}')">
-                    <img src="${folder}/${item.filename}" loading="lazy" onerror="this.src='https://via.placeholder.com/160x90?text=No+Image'">
-                    <div class="card-info">
-                        <div>${item.title}</div>
-                        <small style="color:#666">${date}</small>
+        // 2. 描画関数
+        function render(data) {
+            grid.innerHTML = data.map(item => {
+                const parts = item.filename.split('_');
+                
+                // フォルダ名の判定ロジックを強化
+                let gen = "103"; // デフォルト
+                if (parts.includes("105")) gen = "105";
+                else if (parts.includes("104")) gen = "104";
+                
+                const folder = `${gen}期サムネ`;
+                // 日付部分は末尾から取得（拡張子を除去）
+                const datePart = parts[parts.length - 1].replace(/\.[^/.]+$/, "").replace("jpg", "");
+                
+                return `
+                    <div class="card" onclick="openModal('${item.filename}')">
+                        <img src="${folder}/${item.filename}" loading="lazy" onerror="this.src='https://via.placeholder.com/160x90?text=No+Image'">
+                        <div class="card-info">
+                            <div>${item.title}</div>
+                            <small style="color:#666">${datePart}</small>
+                        </div>
                     </div>
-                </div>
-            `;
-        }).join('');
-    }
+                `;
+            }).join('');
+        }
 
-    window.showDetail = function(filename) {
-        const item = archiveData.find(d => d.filename === filename);
-        if (!item) return;
-        const parts = filename.split('_');
-        const folder = `${parts[1]}期サムネ`;
-        
-        document.getElementById('modalImage').src = `${folder}/${filename}`;
-        document.getElementById('modalTitle').innerText = item.title;
-        document.getElementById('modalDate').innerText = `日付: ${parts[2].split('.')[0]}`;
-        document.getElementById('modalPerformers').innerText = "出演: " + item.performers.join(', ');
-        document.getElementById('modalSummary').innerText = item.summary;
-        document.getElementById('detailModal').style.display = "block";
-    };
+        // 3. 詳細表示
+        window.openModal = function(filename) {
+            const item = archiveData.find(d => d.filename === filename);
+            if (!item) return;
+            
+            const parts = filename.split('_');
+            let gen = "103";
+            if (parts.includes("105")) gen = "105";
+            else if (parts.includes("104")) gen = "104";
+            
+            const folder = `${gen}期サムネ`;
+            const datePart = parts[parts.length - 1].replace(/\.[^/.]+$/, "").replace("jpg", "");
 
-    function filterData() {
-        const searchText = document.getElementById('searchInput').value.toLowerCase().split(/\s+/).filter(t => t);
-        const searchLogic = document.getElementById('searchLogic').value;
-        const selectedGens = Array.from(document.querySelectorAll('.filter-gen:checked')).map(el => el.value);
-        const selectedPerfs = Array.from(document.querySelectorAll('.filter-perf:checked')).map(el => el.value);
-        const filterLogic = document.getElementById('filterLogic').value;
+            document.getElementById('modalImage').src = `${folder}/${filename}`;
+            document.getElementById('modalTitle').innerText = item.title;
+            document.getElementById('modalDate').innerText = `日付: ${datePart}`;
+            document.getElementById('modalPerformers').innerText = "出演: " + (item.performers.length > 0 ? item.performers.join(', ') : "未設定");
+            document.getElementById('modalSummary').innerText = item.summary || "概要はまだありません。";
+            document.getElementById('detailModal').style.display = "block";
+        };
 
-        const filtered = archiveData.filter(item => {
-            const fullText = (item.title + item.summary + item.performers.join('')).toLowerCase();
-            let matchSearch = true;
-            if (searchText.length > 0) {
-                matchSearch = searchLogic === 'AND' ? searchText.every(t => fullText.includes(t)) : searchText.some(t => fullText.includes(t));
-            }
-            const matchGen = selectedGens.length === 0 || selectedGens.includes(item.filename.split('_')[1]);
-            const matchPerf = selectedPerfs.length === 0 || (
-                filterLogic === 'AND' ? selectedPerfs.every(p => item.performers.includes(p)) : selectedPerfs.some(p => item.performers.includes(p))
-            );
-            return matchSearch && matchGen && matchPerf;
-        });
-        render(filtered);
-    }
+        // 4. 検索・フィルター
+        function filterData() {
+            const searchText = document.getElementById('searchInput').value.toLowerCase().split(/\s+/).filter(t => t);
+            const searchLogic = document.getElementById('searchLogic').value;
+            const selectedGens = Array.from(document.querySelectorAll('.filter-gen:checked')).map(el => el.value);
+            const selectedPerfs = Array.from(document.querySelectorAll('.filter-perf:checked')).map(el => el.value);
+            const filterLogic = document.getElementById('filterLogic').value;
 
-    // イベント登録
-    document.querySelectorAll('input, select').forEach(el => el.addEventListener('change', filterData));
-    document.getElementById('searchInput').addEventListener('input', filterData);
-    document.querySelector('.close').onclick = () => document.getElementById('detailModal').style.display = "none";
-    window.onclick = (e) => { if(e.target.id === 'detailModal') document.getElementById('detailModal').style.display = "none"; };
+            const filtered = archiveData.filter(item => {
+                const fullText = (item.title + item.summary + item.performers.join('')).toLowerCase();
+                
+                // 単語検索
+                let matchSearch = true;
+                if (searchText.length > 0) {
+                    matchSearch = (searchLogic === 'AND') 
+                        ? searchText.every(t => fullText.includes(t)) 
+                        : searchText.some(t => fullText.includes(t));
+                }
 
-    // 初回描画
-    render(archiveData);
-});
+                // 期フィルター
+                const parts = item.filename.split('_');
+                let itemGen = "103";
+                if (parts.includes("105")) itemGen = "105";
+                else if (parts.includes("104")) itemGen = "104";
+                const matchGen = selectedGens.length === 0 || selectedGens.includes(itemGen);
+
+                // 出演者フィルター
+                const matchPerf = selectedPerfs.length === 0 || (
+                    filterLogic === 'AND' 
+                        ? selectedPerfs.every(p => item.performers.includes(p)) 
+                        : selectedPerfs.some(p => item.performers.includes(p))
+                );
+
+                return matchSearch && matchGen && matchPerf;
+            });
+            render(filtered);
+        }
+
+        // イベント登録
+        document.querySelectorAll('input, select').forEach(el => el.addEventListener('change', filterData));
+        document.getElementById('searchInput').addEventListener('input', filterData);
+        document.querySelector('.close').onclick = () => document.getElementById('detailModal').style.display = "none";
+        window.onclick = (e) => { if(e.target.id === 'detailModal') document.getElementById('detailModal').style.display = "none"; };
+
+        render(archiveData);
+    });
+})();
