@@ -1,25 +1,26 @@
-:root { --accent: #00a0e9; --bg: #f0f4f7; }
-body { font-family: sans-serif; background: var(--bg); margin: 0; color: #333; }
-
+:root { --accent: #00a0e9; --bg: #f4f7f9; }
+body { font-family: sans-serif; background: var(--bg); margin: 0; }
 header { background: white; padding: 15px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-.header-top, .filter-area { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 10px; align-items: center; }
-#searchInput { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 6px; }
+.header-top, .filter-area { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 8px; align-items: center; }
+#searchInput { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 6px; min-width: 200px; }
 
-.grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; padding: 15px; }
-.card { background: white; border-radius: 8px; overflow: hidden; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
-.card-img-wrapper { width: 100%; aspect-ratio: 16/9; background: #ddd; }
+.grid-container { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); 
+    gap: 15px; padding: 15px; 
+}
+.card { background: white; border-radius: 10px; overflow: hidden; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+.card-img-wrapper { width: 100%; aspect-ratio: 16/9; background: #ccc; }
 .card img { width: 100%; height: 100%; object-fit: cover; }
-.card-info { padding: 8px; flex-grow: 1; }
-.card-title { font-size: 0.85em; font-weight: bold; margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.card-date { font-size: 0.75em; color: #777; }
+.card-info { padding: 10px; }
+.card-title { font-size: 0.9em; font-weight: bold; margin-bottom: 5px; color: #333; }
+.card-date { font-size: 0.8em; color: #888; }
 
-/* 詳細モーダル */
-.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; overflow-y: auto; }
-.modal-content { background: white; margin: 20px auto; width: 95%; max-width: 500px; border-radius: 15px; overflow: hidden; position: relative; }
-.close { position: absolute; right: 15px; top: 10px; font-size: 30px; cursor: pointer; z-index: 10; color: #333; text-shadow: 0 0 5px white; }
+/* モーダル */
+.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; }
+.modal-content { background: white; margin: 5% auto; width: 90%; max-width: 550px; border-radius: 12px; overflow: hidden; position: relative; }
+.modal-text { padding: 20px; max-height: 70vh; overflow-y: auto; }
+.close { position: absolute; right: 15px; top: 10px; font-size: 30px; cursor: pointer; color: #333; z-index: 10; }
 #modalImage { width: 100%; aspect-ratio: 16/9; object-fit: contain; background: #000; }
-.modal-text { padding: 20px; }
-#modalTitle { margin: 0 0 10px 0; font-size: 1.2em; border-left: 4px solid var(--accent); padding-left: 10px; }
-.date-label { color: #666; font-size: 0.9em; margin-bottom: 15px; }
-.perf-list { color: var(--accent); font-weight: bold; margin-bottom: 15px; background: #e6f7ff; padding: 8px; border-radius: 5px; }
-#modalSummary { line-height: 1.6; font-size: 0.95em; color: #444; white-space: pre-wrap; }
+#modalTitle { font-size: 1.2em; margin: 0 0 10px 0; border-left: 5px solid var(--accent); padding-left: 10px; }
+.perf-list { background: #e6f7ff; padding: 10px; border-radius: 5px; color: var(--accent); font-weight: bold; margin: 10px 0; }
