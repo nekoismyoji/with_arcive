@@ -1,0 +1,19 @@
+body { font-family: sans-serif; background: #f0f4f8; margin: 0; padding: 20px; }
+header { background: #fff; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+}
+.archive-card {
+    background: #fff; border-radius: 8px; overflow: hidden; cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+.archive-card img { width: 100%; display: block; }
+.archive-card .info { padding: 10px; font-size: 0.9em; }
+
+/* モーダル */
+.modal { display: none; position: fixed; z-index: 1; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); }
+.modal-content { background: #fff; margin: 5% auto; padding: 20px; width: 80%; max-width: 600px; border-radius: 10px; }
+.modal-content img { width: 100%; border-radius: 5px; }
+.close { float: right; font-size: 28px; cursor: pointer; }
