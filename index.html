@@ -3,34 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Archive Connect</title>
+    <title>Archive Viewer</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
-        <div class="search-section">
+        <div class="header-top">
             <input type="text" id="searchInput" placeholder="単語検索 (スペース区切り)">
             <select id="searchLogic">
-                <option value="AND">AND検索</option>
-                <option value="OR">OR検索</option>
+                <option value="AND">検索: AND</option>
+                <option value="OR">検索: OR</option>
             </select>
         </div>
 
-        <div class="filter-section">
+        <div class="filter-area">
             <div class="filter-group">
-                <span>期:</span>
+                <span class="label">期:</span>
                 <label><input type="checkbox" class="filter-gen" value="103"> 103</label>
                 <label><input type="checkbox" class="filter-gen" value="104"> 104</label>
                 <label><input type="checkbox" class="filter-gen" value="105"> 105</label>
             </div>
-            <div class="filter-group performers">
-                <span>出演者:</span>
-                <div id="performerFilters"></div>
+            <div class="filter-group">
+                <span class="label">出演者:</span>
+                <div id="performerFilters" class="checkbox-list"></div>
             </div>
-            <div class="filter-logic-select">
+            <div class="filter-logic">
                 <select id="filterLogic">
-                    <option value="AND">フィルターAND</option>
-                    <option value="OR">フィルターOR</option>
+                    <option value="AND">フィルター: AND</option>
+                    <option value="OR">フィルター: OR</option>
                 </select>
             </div>
         </div>
@@ -42,10 +42,10 @@
         <div class="modal-content">
             <span class="close">&times;</span>
             <img id="modalImage" src="" alt="">
-            <div class="modal-body">
+            <div class="modal-text">
                 <h2 id="modalTitle"></h2>
-                <p id="modalDate" class="badge"></p>
-                <div id="modalPerformers" class="perf-tags"></div>
+                <p id="modalDate" class="date-label"></p>
+                <div id="modalPerformers" class="perf-list"></div>
                 <hr>
                 <p id="modalSummary"></p>
             </div>
