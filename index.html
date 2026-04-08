@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>School Idol Connect Archive</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Archive Search</h1>
+        <div class="search-controls">
+            <input type="text" id="searchInput" placeholder="単語検索 (スペース区切り)">
+            <select id="searchLogic">
+                <option value="AND">AND検索</option>
+                <option value="OR">OR検索</option>
+            </select>
+        </div>
+
+        <div class="filter-controls">
+            <div class="filter-group">
+                <label>期:</label>
+                <label><input type="checkbox" class="filter-gen" value="103"> 103期</label>
+                <label><input type="checkbox" class="filter-gen" value="104"> 104期</label>
+                <label><input type="checkbox" class="filter-gen" value="105"> 105期</label>
+            </div>
+            <div class="filter-group">
+                <label>出演者:</label>
+                <div id="performerFilters">
+                    </div>
+            </div>
+            <select id="filterLogic">
+                <option value="AND">フィルターAND</option>
+                <option value="OR">フィルターOR</option>
+            </select>
+        </div>
+    </header>
+
+    <main id="archiveGrid" class="grid-container"></main>
+
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <img id="modalImage" src="" alt="">
+            <h2 id="modalTitle"></h2>
+            <p id="modalPerformers"></p>
+            <p id="modalSummary"></p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
