@@ -10,11 +10,16 @@
 
         const folder = gen + "期サムネ";
         const lastPart = parts[parts.length - 1];
-        const date = lastPart.split('.')[0].replace('jpg', '').replace('jpeg', '');
+        let date = lastPart.split('.')[0].replace('jpg', '').replace('jpeg', '');
+        
+        // 追加：日付が4桁（MMDD）ならスラッシュを入れる処理
+        if (date.length === 4) {
+            date = date.substring(0, 2) + "/" + date.substring(2, 4);
+        }
         
         return { gen, folder, date };
     }
-
+    
     function render(data) {
         const grid = document.getElementById('archiveGrid');
         grid.innerHTML = data.map(item => {
