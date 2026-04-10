@@ -1,11 +1,10 @@
 (function() {
     const performersList = ["セラス", "泉", "吟子", "小鈴", "姫芽", "花帆", "さやか", "瑠璃乃", "梢", "綴理", "慈"];
-    let archiveData = []; // ここは空のままでOK（後で読み込みます）
+    let archiveData = []; 
 
-    // ファイル名から「期」「フォルダ」「日付」を特定する関数
     function getFileInfo(filename) {
         const parts = filename.split('_');
-        let gen = "103"; // デフォルト
+        let gen = "103"; 
         if (parts.includes("105")) gen = "105";
         else if (parts.includes("104")) gen = "104";
 
@@ -16,7 +15,6 @@
         return { gen, folder, date };
     }
 
-    // 画面を描画するメインの仕組み
     function render(data) {
         const grid = document.getElementById('archiveGrid');
         grid.innerHTML = data.map(item => {
@@ -35,7 +33,6 @@
         }).join('');
     }
 
-    // モーダル表示
     window.openModal = function(filename) {
         const item = archiveData.find(d => d.filename === filename);
         if (!item) return;
@@ -53,7 +50,6 @@
         document.getElementById('detailModal').style.display = "block";
     };
 
-    // フィルター機能
     function filterData() {
         const searchText = document.getElementById('searchInput').value.toLowerCase().split(/\s+/).filter(t => t);
         const searchLogic = document.getElementById('searchLogic').value;
@@ -65,20 +61,29 @@
             const info = getFileInfo(item.filename);
             const fullText = (item.title + item.summary + item.performers.join('')).toLowerCase();
             
+            // 検索ワード判定
             let matchSearch = true;
             if (searchText.length > 0) {
-                matchSearch = (searchLogic === 'AND') ? searchText.every(t => fullText.includes(t)) : searchText.some(t => fullText.includes(t));
+                matchSearch = (searchLogic === 'AND') 
+                    ? searchText.every(t => fullText.includes(t)) 
+                    : searchText.some(t => fullText.includes(t));
             }
+
+            // 期の判定
             const matchGen = selectedGens.length === 0 || selectedGens.includes(info.gen);
+
+            // 出演者の判定（ここを「部分一致」に修正しました）
             const matchPerf = selectedPerfs.length === 0 || (
-                filterLogic === 'AND' ? selectedPerfs.every(p => item.performers.includes(p)) : selectedPerfs.some(p => item.performers.includes(p))
+                filterLogic === 'AND' 
+                    ? selectedPerfs.every(p => item.performers.some(full => full.includes(p))) 
+                    : selectedPerfs.some(p => item.performers.some(full => full.includes(p)))
             );
+
             return matchSearch && matchGen && matchPerf;
         });
         render(filtered);
     }
 
-    // ★ 起動時にJSONを読み込む処理
     window.addEventListener('DOMContentLoaded', async () => {
         const perfContainer = document.getElementById('performerFilters');
         perfContainer.innerHTML = performersList.map(p => 
@@ -86,7 +91,6 @@
         ).join('');
 
         try {
-            // data.json を読み込みに行く
             const response = await fetch('data.json');
             archiveData = await response.json();
             render(archiveData);
