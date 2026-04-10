@@ -24,3 +24,12 @@ header { background: white; padding: 15px; position: sticky; top: 0; z-index: 10
 #modalImage { width: 100%; aspect-ratio: 16/9; object-fit: contain; background: #000; }
 #modalTitle { font-size: 1.2em; margin: 0 0 10px 0; border-left: 5px solid var(--accent); padding-left: 10px; }
 .perf-list { background: #e6f7ff; padding: 10px; border-radius: 5px; color: var(--accent); font-weight: bold; margin: 10px 0; }
+
+/* 追加：説明文の中央揃え */
+#modalSummary { 
+    line-height: 1.6; 
+    font-size: 0.95em; 
+    color: #444; 
+    white-space: pre-wrap; 
+    text-align: center; /* ここで中央揃えにしています */
+}
