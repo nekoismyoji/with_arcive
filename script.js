@@ -4,15 +4,15 @@
 
     function getFileInfo(filename) {
         const parts = filename.split('_');
-        let gen = "103"; 
-        if (parts.includes("105")) gen = "105";
-        else if (parts.includes("104")) gen = "104";
+        
+        // ファイル名 [通し番号]_[期]_[日付].jpg の「期」にあたる2番目を取得
+        // もし2番目が存在しない場合はデフォルトで"103"にする
+        let gen = parts[1] || "103"; 
 
         const folder = gen + "期サムネ";
         const lastPart = parts[parts.length - 1];
         let date = lastPart.split('.')[0].replace('jpg', '').replace('jpeg', '');
         
-        // 追加：日付が4桁（MMDD）ならスラッシュを入れる処理
         if (date.length === 4) {
             date = date.substring(0, 2) + "/" + date.substring(2, 4);
         }
@@ -66,7 +66,6 @@
             const info = getFileInfo(item.filename);
             const fullText = (item.title + item.summary + item.performers.join('')).toLowerCase();
             
-            // 検索ワード判定
             let matchSearch = true;
             if (searchText.length > 0) {
                 matchSearch = (searchLogic === 'AND') 
@@ -74,10 +73,8 @@
                     : searchText.some(t => fullText.includes(t));
             }
 
-            // 期の判定
             const matchGen = selectedGens.length === 0 || selectedGens.includes(info.gen);
 
-            // 出演者の判定（ここを「部分一致」に修正しました）
             const matchPerf = selectedPerfs.length === 0 || (
                 filterLogic === 'AND' 
                     ? selectedPerfs.every(p => item.performers.some(full => full.includes(p))) 
