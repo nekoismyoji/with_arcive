@@ -5,8 +5,7 @@
     function getFileInfo(filename) {
         const parts = filename.split('_');
         
-        // ファイル名 [通し番号]_[期]_[日付].jpg の「期」にあたる2番目を取得
-        // もし2番目が存在しない場合はデフォルトで"103"にする
+        // [通し番号]_[期]_[日付].jpg の「期」にあたる2番目を取得
         let gen = parts[1] || "103"; 
 
         const folder = gen + "期サムネ";
@@ -93,11 +92,23 @@
         ).join('');
 
         try {
-            const response = await fetch('data.json');
-            archiveData = await response.json();
+            // 読み込むファイルリスト
+            const jsonFiles = ['data_103.json', 'data_104.json', 'data_105.json'];
+            
+            // 全ファイルを並列で取得
+            const responses = await Promise.all(jsonFiles.map(file => fetch(file)));
+            
+            // 全てをJSONとして展開
+            const dataSets = await Promise.all(responses.map(res => {
+                if (!res.ok) throw new Error(`${res.url} が読み込めません`);
+                return res.json();
+            }));
+
+            // 全ての配列を1つに統合
+            archiveData = dataSets.flat();
             render(archiveData);
         } catch (e) {
-            console.error("JSONの読み込みに失敗しました:", e);
+            console.error("データの読み込みに失敗しました:", e);
         }
 
         document.querySelectorAll('input, select').forEach(el => el.addEventListener('change', filterData));
