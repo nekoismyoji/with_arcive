@@ -4,8 +4,6 @@
 
     function getFileInfo(filename) {
         const parts = filename.split('_');
-        
-        // [通し番号]_[期]_[日付].jpg の「期」にあたる2番目を取得
         let gen = parts[1] || "103"; 
 
         const folder = gen + "期サムネ";
@@ -21,6 +19,7 @@
     
     function render(data) {
         const grid = document.getElementById('archiveGrid');
+        if (!grid) return;
         grid.innerHTML = data.map(item => {
             const info = getFileInfo(item.filename);
             return `
@@ -63,7 +62,7 @@
 
         const filtered = archiveData.filter(item => {
             const info = getFileInfo(item.filename);
-            const fullText = (item.title + item.summary + item.performers.join('')).toLowerCase();
+            const fullText = (item.title + (item.summary || "") + item.performers.join('')).toLowerCase();
             
             let matchSearch = true;
             if (searchText.length > 0) {
@@ -87,29 +86,29 @@
 
     window.addEventListener('DOMContentLoaded', async () => {
         const perfContainer = document.getElementById('performerFilters');
-        perfContainer.innerHTML = performersList.map(p => 
-            `<label style="margin-right:10px; cursor:pointer;"><input type="checkbox" class="filter-perf" value="${p}"> ${p}</label>`
-        ).join('');
-
-        try {
-            // 読み込むファイルリスト
-            const jsonFiles = ['data_103.json', 'data_104.json', 'data_105.json'];
-            
-            // 全ファイルを並列で取得
-            const responses = await Promise.all(jsonFiles.map(file => fetch(file)));
-            
-            // 全てをJSONとして展開
-            const dataSets = await Promise.all(responses.map(res => {
-                if (!res.ok) throw new Error(`${res.url} が読み込めません`);
-                return res.json();
-            }));
-
-            // 全ての配列を1つに統合
-            archiveData = dataSets.flat();
-            render(archiveData);
-        } catch (e) {
-            console.error("データの読み込みに失敗しました:", e);
+        if (perfContainer) {
+            perfContainer.innerHTML = performersList.map(p => 
+                `<label style="margin-right:10px; cursor:pointer;"><input type="checkbox" class="filter-perf" value="${p}"> ${p}</label>`
+            ).join('');
         }
+
+        const jsonFiles = ['data_103.json', 'data_104.json', 'data_105.json'];
+        
+        // 各ファイルを個別に読み込み、エラーが出たファイルは無視する
+        const loadPromises = jsonFiles.map(async (file) => {
+            try {
+                const res = await fetch(file);
+                if (!res.ok) throw new Error("File not found");
+                return await res.json();
+            } catch (err) {
+                console.warn(`${file} の読み込みに失敗しました:`, err);
+                return []; // 失敗した場合は空の配列を返す
+            }
+        });
+
+        const dataSets = await Promise.all(loadPromises);
+        archiveData = dataSets.flat();
+        render(archiveData);
 
         document.querySelectorAll('input, select').forEach(el => el.addEventListener('change', filterData));
         document.getElementById('searchInput').addEventListener('input', filterData);
