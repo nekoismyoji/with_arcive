@@ -3,13 +3,9 @@
     let archiveData = []; 
     let currentFilteredData = [];
     let displayCount = 0;
-    const BATCH_SIZE = 30; // 1回に表示する件数
+    const BATCH_SIZE = 30;
 
-    // 取得結果のメモリキャッシュ
     const fileInfoCache = new Map();
-
-    // 外部通信を使わずに即座に描画する「画像読み込み失敗用」SVGデータ
-    const NO_IMAGE_SVG = "data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='180' viewBox='0 0 320 180'%3E%3Crect width='100%25' height='100%25' fill='%232e2e38'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23a0a0b0' font-size='14' font-family='sans-serif'%3E⚠️ 画像が読み込めません%3C/text%3E%3C/svg%3E";
 
     function getFileInfo(filename) {
         if (fileInfoCache.has(filename)) {
@@ -35,12 +31,35 @@
         return res;
     }
 
-    // 入力頻度制限（デバウンス）用タイマー
     let debounceTimer = null;
     function debounceFilter() {
         if (debounceTimer) clearTimeout(debounceTimer);
         debounceTimer = setTimeout(filterData, 150);
     }
+
+    // 画像の読み込み成功時のハンドラ
+    window.handleImageLoad = function(img) {
+        img.classList.add('loaded');
+        if (img.parentElement) {
+            img.parentElement.classList.remove('is-loading');
+        }
+    };
+
+    // 画像の読み込み失敗時のハンドラ（.webp -> .jpg -> エラー表示）
+    window.handleImageError = function(img, filename) {
+        if (!img.dataset.triedJpg) {
+            img.dataset.triedJpg = "true";
+            const info = getFileInfo(filename);
+            const jpgFilename = filename.replace('.webp', '.jpg');
+            img.src = `${info.folder}/${jpgFilename}`;
+        } else {
+            img.style.display = 'none';
+            if (img.parentElement) {
+                img.parentElement.classList.remove('is-loading');
+                img.parentElement.classList.add('has-error');
+            }
+        }
+    };
     
     function render(data, isAppend = false) {
         const grid = document.getElementById('archiveGrid');
@@ -66,13 +85,14 @@
             
             return `
                 <div class="card" onclick="openModal('${item.filename}')">
-                    <div class="card-img-wrapper" style="background-color: #222;">
+                    <div class="card-img-wrapper is-loading">
                         <img src="${info.folder}/${item.filename}" 
                              loading="lazy" 
                              decoding="async" 
                              width="320" 
                              height="180" 
-                             onerror="this.onerror=null; this.src='${NO_IMAGE_SVG}';">
+                             onload="handleImageLoad(this)"
+                             onerror="handleImageError(this, '${item.filename}')">
                     </div>
                     <div class="card-info">
                         <div class="card-title">${titleText}</div>
@@ -86,7 +106,6 @@
         displayCount += nextBatch.length;
     }
 
-    // スクロール時の追加読み込み
     window.addEventListener('scroll', () => {
         const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
         if (scrollTop + clientHeight >= scrollHeight - 300) {
@@ -102,12 +121,12 @@
         const originalJpg = filename.replace('.webp', '.jpg');
         const modalImg = document.getElementById('modalImage');
         
+        modalImg.style.display = 'block';
         modalImg.src = `${info.folder}/${originalJpg}`;
         modalImg.onerror = function() { 
             this.src = `${info.folder}/${filename}`;
             this.onerror = function() {
-                this.onerror = null;
-                this.src = NO_IMAGE_SVG;
+                this.style.display = 'none';
             };
         };
 
@@ -137,15 +156,12 @@
         const filterLogic = document.getElementById('filterLogic').value;
 
         const filtered = archiveData.filter(item => {
-            // キャッシュ済みの基本情報を参照
             const info = getFileInfo(item.filename);
 
-            // 1. 期フィルターチェック
             if (selectedGens.length > 0 && !selectedGens.includes(info.gen)) {
                 return false;
             }
 
-            // 2. 出演者フィルターチェック
             if (selectedPerfs.length > 0) {
                 if (!item.performers) return false;
                 if (filterLogic === 'AND') {
@@ -157,7 +173,6 @@
                 }
             }
 
-            // 3. 単語検索チェック（事前キャッシュされたsearchKeyを使用）
             if (searchText.length > 0) {
                 if (searchLogic === 'AND') {
                     return searchText.every(t => item.searchKey.includes(t));
@@ -196,19 +211,16 @@
         const dataSets = await Promise.all(loadPromises);
         archiveData = dataSets.flat();
 
-        // 検索時の文字結合コストを避けるため、読み込み時に検索用文字列（searchKey）を一括事前生成
         archiveData.forEach(item => {
             item.searchKey = ((item.title || "") + " " + (item.summary || "") + " " + (item.performers ? item.performers.join(' ') : "")).toLowerCase();
         });
 
         render(archiveData);
 
-        // イベントバインドの最適化
         document.querySelectorAll('.filter-gen, .filter-perf, select').forEach(el => {
             el.addEventListener('change', filterData);
         });
 
-        // リアルタイムテキスト入力にはデバウンスを適用
         document.getElementById('searchInput').addEventListener('input', debounceFilter);
 
         document.querySelector('.close').onclick = () => document.getElementById('detailModal').style.display = "none";
