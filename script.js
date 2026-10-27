@@ -34,30 +34,14 @@
     let debounceTimer = null;
     function debounceFilter() {
         if (debounceTimer) clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(filterData, 150);
+        debounceTimer = setTimeout(filterData, 100);
     }
 
-    // 画像の読み込み成功時のハンドラ
-    window.handleImageLoad = function(img) {
-        img.classList.add('loaded');
-        if (img.parentElement) {
-            img.parentElement.classList.remove('is-loading');
-        }
-    };
-
-    // 画像の読み込み失敗時のハンドラ（.webp -> .jpg -> エラー表示）
-    window.handleImageError = function(img, filename) {
-        if (!img.dataset.triedJpg) {
-            img.dataset.triedJpg = "true";
-            const info = getFileInfo(filename);
-            const jpgFilename = filename.replace('.webp', '.jpg');
-            img.src = `${info.folder}/${jpgFilename}`;
-        } else {
-            img.style.display = 'none';
-            if (img.parentElement) {
-                img.parentElement.classList.remove('is-loading');
-                img.parentElement.classList.add('has-error');
-            }
+    // 両方の画像フォーマットが存在しない場合のエラー制御
+    window.handleImageError = function(img) {
+        img.style.display = 'none';
+        if (img.parentElement && img.parentElement.parentElement) {
+            img.parentElement.parentElement.classList.add('has-error');
         }
     };
     
@@ -83,16 +67,21 @@
             const info = getFileInfo(item.filename);
             const titleText = item.title ? item.title : '（タイトル未設定）';
             
+            const webpPath = `${info.folder}/${item.filename}`;
+            const jpgPath = `${info.folder}/${item.filename.replace('.webp', '.jpg')}`;
+            
             return `
                 <div class="card" onclick="openModal('${item.filename}')">
-                    <div class="card-img-wrapper is-loading">
-                        <img src="${info.folder}/${item.filename}" 
-                             loading="lazy" 
-                             decoding="async" 
-                             width="320" 
-                             height="180" 
-                             onload="handleImageLoad(this)"
-                             onerror="handleImageError(this, '${item.filename}')">
+                    <div class="card-img-wrapper">
+                        <picture>
+                            <source srcset="${webpPath}" type="image/webp">
+                            <img src="${jpgPath}" 
+                                 loading="lazy" 
+                                 decoding="async" 
+                                 width="320" 
+                                 height="180" 
+                                 onerror="handleImageError(this)">
+                        </picture>
                     </div>
                     <div class="card-info">
                         <div class="card-title">${titleText}</div>
@@ -118,13 +107,14 @@
         if (!item) return;
         const info = getFileInfo(filename);
         
-        const originalJpg = filename.replace('.webp', '.jpg');
         const modalImg = document.getElementById('modalImage');
+        const webpPath = `${info.folder}/${filename}`;
+        const jpgPath = `${info.folder}/${filename.replace('.webp', '.jpg')}`;
         
         modalImg.style.display = 'block';
-        modalImg.src = `${info.folder}/${originalJpg}`;
+        modalImg.src = jpgPath;
         modalImg.onerror = function() { 
-            this.src = `${info.folder}/${filename}`;
+            this.src = webpPath;
             this.onerror = function() {
                 this.style.display = 'none';
             };
