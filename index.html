@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Archive Viewer</title>
-    <link rel="stylesheet" href="style.css">
+    <!-- ?v= はファイル差し替え時にブラウザ/GitHub Pagesの古いキャッシュを使わせないための番号。更新したら数字を上げる -->
+    <link rel="stylesheet" href="style.css?v=3">
 </head>
 <body>
     <header>
@@ -38,7 +39,7 @@
     <div id="detailModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
-            <img id="modalImage" src="" alt="">
+            <img id="modalImage" alt="">
             <div class="modal-text">
                 <h2 id="modalTitle"></h2>
                 <p id="modalDate" class="date-label"></p>
@@ -48,6 +49,6 @@
             </div>
         </div>
     </div>
-    <script src="script.js"></script>
+    <script src="script.js?v=3"></script>
 </body>
 </html>
