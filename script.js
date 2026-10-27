@@ -1,6 +1,12 @@
 (function() {
     const performersList = ["セラス", "泉", "吟子", "小鈴", "姫芽", "花帆", "さやか", "瑠璃乃", "梢", "綴理", "慈"];
     let archiveData = []; 
+    let currentFilteredData = [];
+    let displayCount = 0;
+    const BATCH_SIZE = 30; // 1回に表示する件数
+
+    // 外部通信を使わずに即座に描画する「画像読み込み失敗用」SVGデータ
+    const NO_IMAGE_SVG = "data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='180' viewBox='0 0 320 180'%3E%3Crect width='100%25' height='100%25' fill='%232e2e38'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23a0a0b0' font-size='14' font-family='sans-serif'%3E⚠️ 画像が読み込めません%3C/text%3E%3C/svg%3E";
 
     function getFileInfo(filename) {
         const parts = filename.split('_');
@@ -17,52 +23,93 @@
         return { gen, folder, date };
     }
     
-    function render(data) {
+    function render(data, isAppend = false) {
         const grid = document.getElementById('archiveGrid');
         if (!grid) return;
-        grid.innerHTML = data.map(item => {
+
+        if (!isAppend) {
+            grid.innerHTML = '';
+            displayCount = 0;
+            currentFilteredData = data;
+        }
+
+        if (currentFilteredData.length === 0) {
+            grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #888;">該当する配信アーカイブが見つかりませんでした。</div>';
+            return;
+        }
+
+        const nextBatch = currentFilteredData.slice(displayCount, displayCount + BATCH_SIZE);
+        if (nextBatch.length === 0) return;
+
+        const html = nextBatch.map(item => {
             const info = getFileInfo(item.filename);
+            const titleText = item.title ? item.title : '（タイトル未設定）';
+            
             return `
                 <div class="card" onclick="openModal('${item.filename}')">
-                    <div class="card-img-wrapper">
+                    <div class="card-img-wrapper" style="background-color: #222;">
                         <img src="${info.folder}/${item.filename}" 
                              loading="lazy" 
                              decoding="async" 
                              width="320" 
                              height="180" 
-                             onerror="this.src='https://via.placeholder.com/160x90?text=No+Image'">
+                             onerror="this.onerror=null; this.src='${NO_IMAGE_SVG}';">
                     </div>
                     <div class="card-info">
-                        <div class="card-title">${item.title}</div>
+                        <div class="card-title">${titleText}</div>
                         <div class="card-date">${info.date}</div>
                     </div>
                 </div>
             `;
         }).join('');
+
+        grid.insertAdjacentHTML('beforeend', html);
+        displayCount += nextBatch.length;
     }
+
+    // スクロールで一番下に近づいたら追加読み込み
+    window.addEventListener('scroll', () => {
+        const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+        if (scrollTop + clientHeight >= scrollHeight - 300) {
+            render(currentFilteredData, true);
+        }
+    });
 
     window.openModal = function(filename) {
         const item = archiveData.find(d => d.filename === filename);
         if (!item) return;
         const info = getFileInfo(filename);
         
-        // モーダルでは高画質版（.jpg）を読み込む処理
         const originalJpg = filename.replace('.webp', '.jpg');
         const modalImg = document.getElementById('modalImage');
         
         modalImg.src = `${info.folder}/${originalJpg}`;
-        // もし元画像（.jpg）が無い場合はWebPを表示するフォールバック
         modalImg.onerror = function() { 
+            // 元画像（JPG）が無ければWebPを試す
             this.src = `${info.folder}/${filename}`;
             this.onerror = function() {
-                this.src = 'https://via.placeholder.com/400x225?text=Image+Not+Found';
+                // どちらも読み込めない場合はSVGエラー画像を表示
+                this.onerror = null;
+                this.src = NO_IMAGE_SVG;
             };
         };
 
-        document.getElementById('modalTitle').innerText = item.title;
+        document.getElementById('modalTitle').innerText = item.title || "（タイトル未設定）";
         document.getElementById('modalDate').innerText = `配信日: ${info.date} (${info.gen}期)`;
-        document.getElementById('modalPerformers').innerText = "出演: " + (item.performers.length > 0 ? item.performers.join(', ') : "（未設定）");
-        document.getElementById('modalSummary').innerText = item.summary || "概要はありません。";
+        
+        // 出演者がない場合
+        if (item.performers && item.performers.length > 0) {
+            document.getElementById('modalPerformers').innerText = "出演: " + item.performers.join(', ');
+        } else {
+            document.getElementById('modalPerformers').innerText = "出演: （出演者情報はありません）";
+        }
+
+        // 概要文がない場合
+        if (item.summary && item.summary.trim() !== "") {
+            document.getElementById('modalSummary').innerText = item.summary;
+        } else {
+            document.getElementById('modalSummary').innerText = "（この配信の概要文・トピック情報はありません）";
+        }
         
         document.getElementById('detailModal').style.display = "block";
     };
@@ -76,7 +123,7 @@
 
         const filtered = archiveData.filter(item => {
             const info = getFileInfo(item.filename);
-            const fullText = (item.title + (item.summary || "") + item.performers.join('')).toLowerCase();
+            const fullText = ((item.title || "") + (item.summary || "") + (item.performers ? item.performers.join('') : "")).toLowerCase();
             
             let matchSearch = true;
             if (searchText.length > 0) {
@@ -89,8 +136,8 @@
 
             const matchPerf = selectedPerfs.length === 0 || (
                 filterLogic === 'AND' 
-                    ? selectedPerfs.every(p => item.performers.some(full => full.includes(p))) 
-                    : selectedPerfs.some(p => item.performers.some(full => full.includes(p)))
+                    ? selectedPerfs.every(p => item.performers && item.performers.some(full => full.includes(p))) 
+                    : selectedPerfs.some(p => item.performers && item.performers.some(full => full.includes(p)))
             );
 
             return matchSearch && matchGen && matchPerf;
