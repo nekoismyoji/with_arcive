@@ -37,11 +37,18 @@
         debounceTimer = setTimeout(filterData, 100);
     }
 
-    // 両方の画像フォーマットが存在しない場合のエラー制御
+    // WebPがない場合にJPGを試し、それでもダメならエラー表示にする
     window.handleImageError = function(img) {
-        img.style.display = 'none';
-        if (img.parentElement && img.parentElement.parentElement) {
-            img.parentElement.parentElement.classList.add('has-error');
+        if (!img.dataset.fallbackTried) {
+            // 1回目のエラー：JPGパスに切り替えて再試行
+            img.dataset.fallbackTried = "true";
+            img.src = img.dataset.jpgPath;
+        } else {
+            // 2回目のエラー：画像が完全に存在しないため非表示
+            img.style.display = 'none';
+            if (img.parentElement) {
+                img.parentElement.classList.add('has-error');
+            }
         }
     };
     
@@ -73,15 +80,13 @@
             return `
                 <div class="card" onclick="openModal('${item.filename}')">
                     <div class="card-img-wrapper">
-                        <picture>
-                            <source srcset="${webpPath}" type="image/webp">
-                            <img src="${jpgPath}" 
-                                 loading="lazy" 
-                                 decoding="async" 
-                                 width="320" 
-                                 height="180" 
-                                 onerror="handleImageError(this)">
-                        </picture>
+                        <img src="${webpPath}" 
+                             data-jpg-path="${jpgPath}"
+                             loading="lazy" 
+                             decoding="async" 
+                             width="320" 
+                             height="180" 
+                             onerror="handleImageError(this)">
                     </div>
                     <div class="card-info">
                         <div class="card-title">${titleText}</div>
