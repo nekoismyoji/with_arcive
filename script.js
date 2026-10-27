@@ -8,7 +8,7 @@
 
         const folder = gen + "期サムネ";
         const lastPart = parts[parts.length - 1];
-        let date = lastPart.split('.')[0].replace('jpg', '').replace('jpeg', '');
+        let date = lastPart.split('.')[0].replace('webp', '').replace('jpg', '').replace('jpeg', '').replace('.', '');
         
         if (date.length === 4) {
             date = date.substring(0, 2) + "/" + date.substring(2, 4);
@@ -25,7 +25,12 @@
             return `
                 <div class="card" onclick="openModal('${item.filename}')">
                     <div class="card-img-wrapper">
-                        <img src="${info.folder}/${item.filename}" loading="lazy" onerror="this.src='https://via.placeholder.com/160x90?text=No+Image'">
+                        <img src="${info.folder}/${item.filename}" 
+                             loading="lazy" 
+                             decoding="async" 
+                             width="320" 
+                             height="180" 
+                             onerror="this.src='https://via.placeholder.com/160x90?text=No+Image'">
                     </div>
                     <div class="card-info">
                         <div class="card-title">${item.title}</div>
@@ -41,9 +46,18 @@
         if (!item) return;
         const info = getFileInfo(filename);
         
+        // モーダルでは高画質版（.jpg）を読み込む処理
+        const originalJpg = filename.replace('.webp', '.jpg');
         const modalImg = document.getElementById('modalImage');
-        modalImg.src = `${info.folder}/${filename}`;
-        modalImg.onerror = function() { this.src = 'https://via.placeholder.com/400x225?text=Image+Not+Found'; };
+        
+        modalImg.src = `${info.folder}/${originalJpg}`;
+        // もし元画像（.jpg）が無い場合はWebPを表示するフォールバック
+        modalImg.onerror = function() { 
+            this.src = `${info.folder}/${filename}`;
+            this.onerror = function() {
+                this.src = 'https://via.placeholder.com/400x225?text=Image+Not+Found';
+            };
+        };
 
         document.getElementById('modalTitle').innerText = item.title;
         document.getElementById('modalDate').innerText = `配信日: ${info.date} (${info.gen}期)`;
@@ -94,7 +108,6 @@
 
         const jsonFiles = ['data_103.json', 'data_104.json', 'data_105.json'];
         
-        // 各ファイルを個別に読み込み、エラーが出たファイルは無視する
         const loadPromises = jsonFiles.map(async (file) => {
             try {
                 const res = await fetch(file);
@@ -102,7 +115,7 @@
                 return await res.json();
             } catch (err) {
                 console.warn(`${file} の読み込みに失敗しました:`, err);
-                return []; // 失敗した場合は空の配列を返す
+                return [];
             }
         });
 
