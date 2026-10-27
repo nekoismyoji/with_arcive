@@ -6,9 +6,9 @@
     const BATCH_SIZE = 30;
 
     /* ------------------------------------------------------------------
-     * ファイル名 → 期 / 連番 / 日付 などの情報
-     *   例) 024_105_0612.webp -> num=24, gen=105, rest="0612"
-     *       130_105_megu.webp -> num=130, gen=105, rest="megu"
+     * ファイル名 → 期 / 年月日 / 時系列ソートキー 情報抽出
+     *   例) 029_103_0417.webp -> 2023/04/17 (103期春)
+     *       001_103_0111.webp -> 2024/01/11 (103期冬: 4/1〜3/31の年度跨ぎ補正)
      * ------------------------------------------------------------------ */
     const fileInfoCache = new Map();
 
@@ -22,15 +22,40 @@
         const rest = m ? m[3] : base;                          // 日付部分(+サフィックス)
         const rawDate = rest.split('_')[0];
 
-        let date = rawDate;
+        let dateStr = rawDate;
+        let year = null;
+        let month = null;
+        let day = null;
+        let sortKey = 0;
+
+        const genNum = parseInt(gen, 10) || 103;
+        // 103期=2023年度, 104期=2024年度, 105期=2025年度
+        const baseYear = 2023 + (genNum - 103);
+
         if (/^\d{4}$/.test(rawDate)) {
-            date = rawDate.substring(0, 2) + "/" + rawDate.substring(2, 4);
+            month = parseInt(rawDate.substring(0, 2), 10);
+            day = parseInt(rawDate.substring(2, 4), 10);
+
+            // 4月〜12月は当年(baseYear)、1月〜3月は翌年(baseYear + 1)
+            year = (month >= 1 && month <= 3) ? baseYear + 1 : baseYear;
+
+            const mStr = String(month).padStart(2, '0');
+            const dStr = String(day).padStart(2, '0');
+            dateStr = `${year}/${mStr}/${dStr}`;
+
+            const numVal = m ? parseInt(numStr, 10) : 0;
+            // 時系列ソート用キー: YYYYMMDD * 1000 + 連番
+            sortKey = year * 1000000 + month * 10000 + day * 100 + (numVal % 100);
         } else if (rawDate === "megu") {
-            date = "特別配信";
+            dateStr = "特別配信";
+            year = baseYear + 1;
+            sortKey = (baseYear + 1) * 1000000 + 123199;
+        } else {
+            sortKey = baseYear * 1000000;
         }
 
         const res = {
-            gen, base, rest, date,
+            gen, base, rest, date: dateStr, rawDate, year, month, day, sortKey,
             num: m ? parseInt(numStr, 10) : null,
             numWidth: numStr.length || 3,
             folder: gen + "期サムネ"
@@ -47,21 +72,7 @@
 
     /* ------------------------------------------------------------------
      * 画像の解決ロジック
-     *
-     *  JSON上のファイル名と実ファイルがずれていても、
-     *  「期 + 日付(MMDD)」が同じファイルを探して見つける。
-     *
-     *  探索順（上から順に、最初に見つかったものを採用）
-     *    1. 期フォルダ内で、連番を 0, -1, +1, -2, +2 とずらした名前
-     *       （日付部分は必ず一致させるので、別の配信の画像を拾うことはない）
-     *    2. 予備フォルダ（WSサムネ）で同じことを行う
-     *    まず全候補を WebP で確認し、無ければ全候補を JPG → JPEG で確認（WebP → JPG → JPEG の優先順位は維持）
-     *    3. すべて無ければ「画像なし」
-     *
-     *  - 存在確認は <img> のonerrorではなく Image() で行う
-     *  - 結果は resolvedCache に保存（URL文字列 or null）
-     *  - 同じ画像への同時リクエストは pendingCache で1本にまとめる
-     *  → DOMが何度作り直されても、再探索や要素ごとの状態に依存しない
+     *   - 期フォルダ（103期サムネ、104期サムネ、105期サムネ）を厳格に限定して探す
      * ------------------------------------------------------------------ */
     const IMAGE_EXTS = ['webp', 'jpg', 'jpeg'];
     const EXTRA_FOLDERS = ['WSサムネ'];
@@ -69,7 +80,7 @@
 
     const resolvedCache = new Map();   // filename -> string | null
     const pendingCache = new Map();    // filename -> Promise<string|null>
-    const offsetHint = new Map();      // gen -> 直前に当たった連番ずれ（次の探索を最初にそこから試す）
+    const offsetHint = new Map();      // gen -> 直前に当たった連番ずれ
 
     function probeImage(url) {
         return new Promise(resolve => {
@@ -80,7 +91,6 @@
         });
     }
 
-    // 1か所(フォルダ+ファイル名)について、指定した拡張子を確認して最初に存在したURLを返す
     async function probeSpot(folder, base, exts) {
         const makeUrl = ext => `${encodeURI(folder)}/${encodeURIComponent(base)}.${ext}`;
         const urls = exts.map(makeUrl);
@@ -92,23 +102,26 @@
     function buildSpots(info) {
         const spots = [];
         const hint = offsetHint.get(info.gen);
+
+        // 当該「期フォルダ」内のみで連番ズレ(0, -1, 1, -2, 2)を試す（他期フォルダへの混同防止）
         if (hint !== undefined) spots.push({ folder: info.folder, offset: hint });
-        for (const folder of [info.folder, ...EXTRA_FOLDERS]) {
-            for (const offset of NUMBER_OFFSETS) {
-                if (folder === info.folder && offset === hint) continue;
-                spots.push({ folder, offset });
-            }
+        for (const offset of NUMBER_OFFSETS) {
+            if (offset === hint) continue;
+            spots.push({ folder: info.folder, offset });
+        }
+
+        // 予備フォルダ（WSサムネ等）がある場合のみ最後に追加
+        for (const folder of EXTRA_FOLDERS) {
+            spots.push({ folder, offset: 0 });
         }
         return spots;
     }
 
     async function findImage(info) {
         const spots = info.num === null
-            ? [info.folder, ...EXTRA_FOLDERS].map(folder => ({ folder, offset: 0 }))
+            ? [{ folder: info.folder, offset: 0 }, ...EXTRA_FOLDERS.map(folder => ({ folder, offset: 0 }))]
             : buildSpots(info);
 
-        // 1周目: WebP だけを全候補で確認（普通はここで見つかる。404も最小限）
-        // 2周目: WebP が無かった場合に JPG / JPEG を全候補で確認
         const rounds = [IMAGE_EXTS.slice(0, 1), IMAGE_EXTS.slice(1)];
         for (const exts of rounds) {
             for (const { folder, offset } of spots) {
@@ -133,7 +146,6 @@
 
         const task = findImage(getFileInfo(filename))
             .then(url => {
-                // オフライン中の失敗は「画像なし」として覚えない（復帰後に再試行できる）
                 if (url || navigator.onLine !== false) resolvedCache.set(filename, url);
                 return url;
             })
@@ -143,17 +155,16 @@
         return task;
     }
 
-    /* 1枚の <img> に画像を適用する。要素が既にDOMから消えていたら何もしない */
     function applyImage(img) {
         const filename = img.dataset.filename;
-        if (!filename || img.dataset.state) return;      // loading / done / error のどれかなら二重実行しない
+        if (!filename || img.dataset.state) return;
         img.dataset.state = 'loading';
 
         resolveImage(filename).then(url => {
-            if (!img.isConnected) return;                // フィルター切替で破棄された要素
+            if (!img.isConnected) return;
             const wrapper = img.parentElement;
             if (url) {
-                img.src = url;                           // 実在確認済み → キャッシュから即表示
+                img.src = url;
                 img.dataset.state = 'done';
                 if (wrapper) {
                     wrapper.classList.remove('is-loading', 'has-error');
@@ -170,7 +181,6 @@
         });
     }
 
-    /* 画面付近に来たカードだけ解決する（lazy loading の代わり） */
     const imageObserver = ('IntersectionObserver' in window)
         ? new IntersectionObserver(entries => {
             for (const entry of entries) {
@@ -197,7 +207,6 @@
         if (!grid) return;
 
         if (!isAppend) {
-            // 前回の描画で監視中の画像をまとめて解除してから作り直す
             if (imageObserver) imageObserver.disconnect();
             grid.innerHTML = '';
             displayCount = 0;
@@ -223,7 +232,7 @@
                     </div>
                     <div class="card-info">
                         <div class="card-title">${titleText}</div>
-                        <div class="card-date">${info.date}</div>
+                        <div class="card-date">${info.date} (${info.gen}期)</div>
                     </div>
                 </div>
             `;
@@ -233,13 +242,11 @@
         grid.insertAdjacentHTML('beforeend', html);
         displayCount += nextBatch.length;
 
-        // 今回追加した <img> だけを監視に登録
         Array.from(grid.children).slice(before).forEach(card => {
             const img = card.querySelector('img');
             if (img) watchImage(img);
         });
 
-        // 追加後もセンチネルが画面内に残っている場合に備えて再判定させる
         if (sentinelObserver && sentinel) {
             sentinelObserver.unobserve(sentinel);
             sentinelObserver.observe(sentinel);
@@ -278,7 +285,7 @@
         const info = getFileInfo(filename);
 
         const modalImg = document.getElementById('modalImage');
-        const token = ++modalToken;                      // 連続で開いたとき古い結果を捨てる
+        const token = ++modalToken;
         modalImg.removeAttribute('src');
         modalImg.style.display = 'block';
         resolveImage(filename).then(url => {
@@ -366,6 +373,13 @@
         }));
         archiveData = dataSets.flat();
 
+        // ★ 4/1〜翌3/31（年度跨ぎ考慮）の正順（時系列）でソート
+        archiveData.sort((a, b) => {
+            const infoA = getFileInfo(a.filename);
+            const infoB = getFileInfo(b.filename);
+            return infoA.sortKey - infoB.sortKey;
+        });
+
         archiveData.forEach(item => {
             item.searchKey = ((item.title || "") + " " + (item.summary || "") + " " +
                 (item.performers ? item.performers.join(' ') : "")).toLowerCase();
@@ -379,7 +393,6 @@
         });
         document.getElementById('searchInput').addEventListener('input', debounceFilter);
 
-        // カードのクリックは親(グリッド)で一括処理
         document.getElementById('archiveGrid').addEventListener('click', e => {
             const card = e.target.closest('.card');
             if (card && card.dataset.filename) openModal(card.dataset.filename);
